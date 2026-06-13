@@ -16,7 +16,10 @@
           <div class="glass-card-content" style="width:100%;flex:1;overflow-y:auto;min-height:0;display:flex;flex-direction:column;">
             <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border-color);padding-bottom:12px;margin-bottom:24px;">
               <h2 class="card-title" style="border:none;margin:0;padding:0;">⚙️ UI Customization Engine</h2>
-              <button class="btn btn-outline interactive-el" style="padding:6px 12px;" @click="resetSettings">Сбросить по умолчанию</button>
+              <div style="display:flex;gap:12px;">
+                <button class="btn btn-outline interactive-el" style="padding:6px 12px;" @click="resetSettings">Сбросить по умолчанию</button>
+                <button class="btn-icon interactive-el" @click="$emit('close'); $emit('back')" style="width:32px;height:32px;background:rgba(239,68,68,0.1);color:#ef4444;border-color:rgba(239,68,68,0.2);">✕</button>
+              </div>
             </div>
 
             <p style="color:var(--text-muted);margin-bottom:24px;font-size:13px;">Изменения применяются мгновенно. Активная категория: <strong>{{ getCategoryTitle(activeCategory) }}</strong>.</p>
@@ -216,6 +219,8 @@ import { ref, onMounted } from 'vue';
 import ThemeSwitcher from './ThemeSwitcher.vue';
 import { settingsService } from '../../services/settings.service';
 import type { AppSettings } from '../../types/settings';
+
+defineEmits(['close', 'back']);
 
 const activeCategory = ref('theme');
 const settings = ref<AppSettings>(settingsService.getSettings());

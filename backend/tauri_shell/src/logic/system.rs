@@ -109,9 +109,9 @@ pub async fn get_custom_themes() -> Result<Vec<String>, String> {
             if let Ok(ft) = entry.file_type() {
                 if ft.is_file() {
                     let name = entry.file_name().to_string_lossy().to_string();
-                    if name.starts_with("settings-") && name.ends_with(".json") {
+                    if name.starts_with("settings-theme-") && name.ends_with(".json") {
                         let theme = name
-                            .trim_start_matches("settings-")
+                            .trim_start_matches("settings-theme-")
                             .trim_end_matches(".json")
                             .to_string();
                         if theme != "light" && theme != "dark" {
@@ -131,7 +131,7 @@ pub async fn load_theme(theme: String) -> Result<Value, String> {
     let path = env::current_dir()
         .unwrap_or_default()
         .join("data")
-        .join(format!("settings-{}.json", theme));
+        .join(format!("settings-theme-{}.json", theme)); // Fixed file name format here too to match main.rs
     if path.exists() {
         let content = fs::read_to_string(&path).map_err(|e| e.to_string())?;
         Ok(serde_json::from_str(&content).unwrap_or(Value::Null))
