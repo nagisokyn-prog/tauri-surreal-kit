@@ -55,7 +55,7 @@ const apiService = {
   getTags: async (project: string) => {
     try {
       const res = await invoke('get_tags', { project_id: project }) as any;
-      return res ? processIds(res) : [];
+      return res ? processIds(res) as any[] : [];
     } catch(e) { console.error(e); return []; }
   },
   saveTag: async (project: string, tagData: any) => {

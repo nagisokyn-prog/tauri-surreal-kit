@@ -21,11 +21,11 @@ export const isTauri: boolean =
 
 // ─── invoke() with browser-mock fallback ─────────────────────────────────────
 
-type InvokeFn = (cmd: string, args?: Record<string, unknown>) => Promise<unknown>;
+type InvokeFn = <T = unknown>(cmd: string, args?: Record<string, unknown>) => Promise<T>;
 
 export const invoke: InvokeFn = isTauri
   ? (cmd, args) => (window as any).__TAURI__.core.invoke(cmd, args)
-  : async (cmd, args) => {
+  : async <T>(cmd: string, args?: Record<string, unknown>): Promise<T> => {
       console.warn(`[API Mock] ${cmd}`, args);
       // Extend in your app's own mock layer as needed:
       switch (cmd) {
