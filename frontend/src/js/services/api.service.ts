@@ -29,14 +29,14 @@ export const invoke: InvokeFn = isTauri
       console.warn(`[API Mock] ${cmd}`, args);
       // Extend in your app's own mock layer as needed:
       switch (cmd) {
-        case 'load_settings': return null;
-        case 'save_settings': return null;
+        case 'load_settings': return null as any as T;
+        case 'save_settings': return null as any as T;
         case 'run_performance_benchmark':
-          return { level: 'high', cpu_score: 50, memory_mb: 100, cores: 8 };
-        case 'get_performance_styles': return '';
-        case 'get_custom_themes': return [];
-        case 'load_theme': return null;
-        default: return null;
+          return { level: 'high', cpu_score: 50, memory_mb: 100, cores: 8 } as any as T;
+        case 'get_performance_styles': return '' as any as T;
+        case 'get_custom_themes': return [] as any as T;
+        case 'load_theme': return null as any as T;
+        default: return null as any as T;
       }
     };
 
@@ -84,7 +84,7 @@ export const stringifyId = (val: unknown): string => {
  * Recursively walk an object/array and replace all "id"-like fields with
  * their normalised string form using stringifyId().
  */
-export const processIds = (data: unknown): unknown => {
+export const processIds = (data: unknown): any => {
   if (data === null || data === undefined) return data;
 
   if (Array.isArray(data)) {

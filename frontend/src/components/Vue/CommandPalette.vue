@@ -93,23 +93,19 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  /** Save all — Ctrl+S equivalent */
   (e: 'save'): void;
-  /** Toggle settings panel */
+  (e: 'save-all'): void;
+  (e: 'new-entity'): void;
+  (e: 'new-chapter'): void;
+  (e: 'open-tags'): void;
+  (e: 'open-sandbox'): void;
   (e: 'open-settings'): void;
-  /** Toggle sidebar */
   (e: 'toggle-sidebar'): void;
-  /** Toggle bottom panel */
   (e: 'toggle-panel'): void;
-  /** Close all editor tabs */
   (e: 'close-all-tabs'): void;
-  /** Zoom in */
   (e: 'zoom-in'): void;
-  /** Zoom out */
   (e: 'zoom-out'): void;
-  /** Reset zoom to 100% */
   (e: 'zoom-reset'): void;
-  /** Open QuickOpen palette */
   (e: 'open-quick'): void;
 }>();
 

@@ -54,13 +54,14 @@ import { invoke, stringifyId, processIds } from '../../js/services/api.service';
 const apiService = {
   getTags: async (project: string) => {
     try {
-      const res = await invoke('get_tags', { project_id: project }) as any;
+      const res = await invoke('get_tags', { project }) as any;
       return res ? processIds(res) as any[] : [];
     } catch(e) { console.error(e); return []; }
   },
   saveTag: async (project: string, tagData: any) => {
     try {
-      const res = await invoke('save_tag', { project_id: project, data: tagData });
+      const data = { ...tagData, project_id: `projects:${project}` };
+      const res = await invoke('save_tag', { data });
       return processIds(res);
     } catch(e) { console.error(e); return null; }
   }
