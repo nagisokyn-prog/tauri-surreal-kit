@@ -1,11 +1,11 @@
-﻿/**
+/**
  * @file form.service.ts
  * @description Ð¡ÐµÑ€Ð²Ð¸Ñ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Ñ„Ð¾Ñ€Ð¼Ð°Ð¼Ð¸, Ð¿Ð¾ÑÑ‚Ñ€Ð¾ÐµÐ½Ð½Ñ‹Ð¼Ð¸ Ð½Ð° Ð¾ÑÐ½Ð¾Ð²Ðµ JSON-ÐºÐ¾Ð½Ñ„Ð¸Ð³Ð°
  * @note DOM-Ð·Ð°Ð²Ð¸ÑÐ¸Ð¼Ñ‹Ð¹
  */
 
 
-interface FieldConfig {
+export interface FieldConfig {
   id: string;
   path?: string;
   class?: string;
@@ -15,7 +15,7 @@ interface FieldConfig {
   [key: string]: unknown;
 }
 
-interface DynamicContainerDef {
+export interface DynamicContainerDef {
   id: string;
   type?: string;
   title?: string;
@@ -25,17 +25,17 @@ interface DynamicContainerDef {
   dataPath?: string;
 }
 
-interface SectionConfig {
+export interface SectionConfig {
   id: string;
   fields?: FieldConfig[];
   dynamicContainers?: DynamicContainerDef[];
 }
 
-interface FormConfig {
+export interface FormConfig {
   sections: SectionConfig[];
 }
 
-interface TemplateDef {
+export interface TemplateDef {
   fields?: FieldConfig[];
   dynamicContainers?: DynamicContainerDef[];
 }

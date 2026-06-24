@@ -5,10 +5,9 @@ description = "tauri-surreal-kit shell template — domain-agnostic Tauri + Surr
 authors = []
 edition = "2021"
 
-# Rename to match your app in the real project
-# [lib]
-# name = "my_app_lib"
-# crate-type = ["staticlib", "cdylib", "rlib"]
+[lib]
+name = "tauri_shell"
+crate-type = ["rlib", "staticlib", "cdylib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

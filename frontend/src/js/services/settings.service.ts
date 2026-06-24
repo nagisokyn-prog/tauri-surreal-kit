@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file settings.service.ts
  * @description Ð¡ÐµÑ€Ð²Ð¸Ñ Ð´Ð»Ñ ÑƒÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ°Ð¼Ð¸ Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ñ
  * @rust-ready âœ… loadSettings, saveSettings, calculateLoadMeter, autoDetectFPS
@@ -42,7 +42,7 @@ class SettingsService {
 
     if (typeof window !== 'undefined') {
       window.addEventListener('storage', (e) => {
-        if (e.key === (window as any).__APP_CONFIG__?.storageKey ?? 'app:settings' && e.newValue) {
+        if (e.key === ((window as any).__APP_CONFIG__?.storageKey ?? 'app:settings') && e.newValue) {
           try {
             const newSettings = JSON.parse(e.newValue);
             this.settings = this.deepMerge(this.settings, newSettings);
