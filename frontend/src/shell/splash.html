@@ -62,28 +62,98 @@
         .perf-badge.low    { background: rgba(239,68,68,0.2);  color: #ef4444; }
         .perf-badge.visible { opacity: 1; }
         .perf-details { font-size: 11px; color: #555; margin-top: 5px; }
+
+        .locale-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+        .locale-card {
+            width: min(100%, 420px);
+            background: rgba(15, 15, 20, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 28px 24px;
+            box-shadow: 0 32px 120px rgba(0, 0, 0, 0.45);
+            text-align: center;
+        }
+        .locale-card h2 {
+            margin: 0 0 16px;
+            font-size: 24px;
+            color: #ffffff;
+        }
+        .locale-card p {
+            margin: 0 0 24px;
+            color: #b3b3b3;
+            line-height: 1.6;
+        }
+        .locale-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+        .locale-btn {
+            border: none;
+            border-radius: 14px;
+            padding: 14px 16px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .locale-btn:hover { transform: translateY(-1px); }
+        .locale-btn.primary { background: linear-gradient(135deg, #8b5cf6, #06b6d4); color: #fff; }
+        .locale-btn.secondary { background: rgba(255,255,255,0.08); color: #fff; }
     </style>
 </head>
 <body>
     <div class="splash-container">
         <div class="ascii-art" id="asciiArt"></div>
         <div class="app-name" id="appName"></div>
-        <div class="subtitle"  id="subtitle"></div>
+        <div class="subtitle" id="subtitle"></div>
         <div class="progress-container">
             <div class="progress-bar" id="progressBar"></div>
         </div>
-        <div class="status-text" id="statusText">Initializing...</div>
-        <div class="perf-badge"   id="perfBadge">⚡ Performance: ---</div>
+        <div class="status-text" id="statusText" data-i18n="shell.splash.initializing">Initializing...</div>
+        <div class="perf-badge" id="perfBadge" data-i18n="shell.splash.perfBadge">⚡ Performance: ---</div>
         <div class="perf-details" id="perfDetails"></div>
     </div>
 
+    <div id="localeModal" class="locale-modal-overlay">
+        <div class="locale-card">
+            <h2>Выберите язык интерфейса</h2>
+            <p>Чтобы продолжить, выберите предпочитаемый язык. Это обязательный шаг.</p>
+            <div class="locale-actions">
+                <button id="localeRu" class="locale-btn primary">Русский</button>
+                <button id="localeEn" class="locale-btn secondary">English</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./shell-i18n.js"></script>
     <script>
         // ── Config ─────────────────────────────────────────────────────────
         const cfg = window.__APP_CONFIG__ || {};
         const APP_ID   = cfg.id       || 'app';
         const APP_NAME = cfg.name     || 'App';
-        const SUBTITLE = cfg.subtitle || 'Loading...';
-        const NEXT_URL = cfg.nextUrl  || 'project_launcher.html';
+        const STORAGE_KEY = cfg.storageKey || 'app:settings';
+        const storedLocale = (function() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                return saved ? JSON.parse(saved).locale : null;
+            } catch (e) {
+                return null;
+            }
+        })();
+        shellI18n.init(storedLocale || cfg.lang || cfg.locale);
+        const SUBTITLE = cfg.subtitle || shellI18n.t('shell.splash.defaultSubtitle');
+        const NEXT_URL = cfg.nextUrl  || '/shell/main.html';
 
         const DEFAULT_ASCII = `
  x=i+1;                                                      x=i+1;
@@ -101,7 +171,7 @@
         document.getElementById('appName').textContent  = APP_NAME;
         document.getElementById('subtitle').textContent = SUBTITLE;
         document.getElementById('asciiArt').textContent = cfg.asciiArt || DEFAULT_ASCII;
-        document.title = APP_NAME + ' — Loading';
+        document.title = shellI18n.t('shell.splash.pageTitle', { appName: APP_NAME });
 
         // ── Helpers ────────────────────────────────────────────────────────
         const progressBar = document.getElementById('progressBar');
@@ -134,26 +204,30 @@
             }, true);
 
             try {
-                setProgress(10, 'Preparing database...');
+                setProgress(10, shellI18n.t('shell.splash.preparingDatabase'));
                 await new Promise(r => setTimeout(r, 300));
 
-                setProgress(30, 'Loading schemas...');
+                setProgress(30, shellI18n.t('shell.splash.loadingSchemas'));
                 await new Promise(r => setTimeout(r, 200));
 
-                setProgress(50, 'Running performance benchmark...');
+                setProgress(50, shellI18n.t('shell.splash.runningBenchmark'));
                 const invoke = await waitForTauri(8000);
 
                 const perf = await invoke('run_performance_benchmark');
 
-                setProgress(80, `Benchmark: CPU ${perf.cpu_score}ms, RAM ${perf.memory_mb}ms, ${perf.cores} cores`);
+                setProgress(80, shellI18n.t('shell.splash.benchmarkResult', {
+                  cpu: perf.cpu_score,
+                  ram: perf.memory_mb,
+                  cores: perf.cores,
+                }));
                 await new Promise(r => setTimeout(r, 300));
 
                 const levelNames   = { low: '🐢 Low', medium: '⚡ Medium', high: '🚀 High' };
-                perfBadge.textContent = '⚡ Performance: ' + (levelNames[perf.level] || '---');
+                perfBadge.textContent = shellI18n.t('shell.splash.performanceLabel') + ' ' + (levelNames[perf.level] || '---');
                 perfBadge.className   = 'perf-badge visible ' + (perf.level || 'medium');
                 perfDetails.textContent = `CPU: ${perf.cpu_score}ms | Memory: ${perf.memory_mb}ms | Cores: ${perf.cores}`;
 
-                setProgress(100, 'Ready! Launching...');
+                setProgress(100, shellI18n.t('shell.splash.readyLaunching'));
                 await new Promise(r => setTimeout(r, 500));
 
                 // Persist perf data with APP_ID prefix
@@ -166,13 +240,43 @@
 
             } catch (error) {
                 console.error('Startup error:', error);
-                setProgress(100, 'Error: ' + (error.message || String(error)));
+                setProgress(100, shellI18n.t('shell.splash.errorPrefix') + ' ' + (error.message || String(error)));
                 await new Promise(r => setTimeout(r, 2000));
                 window.location.href = NEXT_URL;
             }
         }
 
-        runStartup();
+        const localeModal = document.getElementById('localeModal');
+        const localeRuBtn = document.getElementById('localeRu');
+        const localeEnBtn = document.getElementById('localeEn');
+
+        function saveLocale(lang) {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                const settings = saved ? JSON.parse(saved) : {};
+                settings.locale = lang;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+            } catch (e) {
+                console.warn('Failed to save locale:', e);
+            }
+            shellI18n.init(lang);
+            const newSubtitle = cfg.subtitle || shellI18n.t('shell.splash.defaultSubtitle');
+            const statusTextNode = document.getElementById('statusText');
+            if (localeModal) localeModal.style.display = 'none';
+            if (statusTextNode) statusTextNode.textContent = shellI18n.t('shell.splash.initializing');
+            if (document.getElementById('subtitle')) document.getElementById('subtitle').textContent = newSubtitle;
+            document.title = shellI18n.t('shell.splash.pageTitle', { appName: APP_NAME });
+            setProgress(0, '');
+            runStartup();
+        }
+
+        if (!storedLocale) {
+            if (localeModal) localeModal.style.display = 'flex';
+            if (localeRuBtn) localeRuBtn.addEventListener('click', () => saveLocale('ru'));
+            if (localeEnBtn) localeEnBtn.addEventListener('click', () => saveLocale('en'));
+        } else {
+            runStartup();
+        }
     </script>
 </body>
 </html>
