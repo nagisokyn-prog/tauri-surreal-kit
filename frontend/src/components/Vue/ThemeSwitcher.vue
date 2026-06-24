@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { settingsService } from '../../services/settings.service';
+import { settingsService } from '../../js/services/settings.service';
 
 const currentTheme = ref<string>('dark');
 const isSaving = ref(false);

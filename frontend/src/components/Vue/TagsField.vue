@@ -49,7 +49,22 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
-import { apiService } from '../../services/api.service';
+import { invoke, stringifyId, processIds } from '../../js/services/api.service';
+
+const apiService = {
+  getTags: async (project: string) => {
+    try {
+      const res = await invoke('get_tags', { project_id: project }) as any;
+      return res ? processIds(res) : [];
+    } catch(e) { console.error(e); return []; }
+  },
+  saveTag: async (project: string, tagData: any) => {
+    try {
+      const res = await invoke('save_tag', { project_id: project, data: tagData });
+      return processIds(res);
+    } catch(e) { console.error(e); return null; }
+  }
+};
 
 const props = defineProps<{
   modelValue: string[] | string | undefined;

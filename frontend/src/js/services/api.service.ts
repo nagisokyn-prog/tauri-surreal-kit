@@ -53,7 +53,7 @@ export const stringifyId = (val: unknown): string => {
     let s = val;
     // Strip leftover SurrealDB wrapper that leaked into a string
     if (s.includes('{String:')) {
-      s = s.replace(/.*String:\"?([^\"]+)\"?.*/, '$1');
+      s = s.replace(/.*String:"?([^"]+)"?.*/, '$1');
     }
     return s.replace(/"/g, '').normalize('NFC').trim();
   }
