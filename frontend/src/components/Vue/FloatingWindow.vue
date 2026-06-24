@@ -14,7 +14,7 @@
           <span class="window-title">{{ title }}</span>
         </div>
         <div class="header-actions">
-          <button class="action-btn close-btn" @click.stop="close" title="Закрыть">&times;</button>
+          <button class="action-btn close-btn" @click.stop="close" :title="t('common.closeWindow')">&times;</button>
         </div>
       </div>
 
@@ -31,6 +31,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, onUnmounted, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   title: string;
@@ -41,6 +42,8 @@ const props = defineProps<{
   initialY?: number;
   zIndexBase?: number;
 }>();
+
+const { t } = useI18n();
 
 const emit = defineEmits(['close', 'focus']);
 

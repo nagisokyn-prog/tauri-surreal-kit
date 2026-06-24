@@ -5,6 +5,7 @@
  */
 
 import { FormService } from './form.service';
+import { i18n } from '../i18n';
 
 interface DynamicContainerDef {
   id: string;
@@ -31,12 +32,12 @@ export class DynamicService {
     container.className = 'dynamic-section';
     if (containerDef.limit !== undefined) container.setAttribute('data-limit', String(containerDef.limit));
     container.innerHTML = `
-      <h4>${containerDef.title || 'Без названия'}</h4>
+      <h4>${containerDef.title || i18n.global.t('dynamic.unnamed')}</h4>
       <div id="${containerDef.id}Container" class="${containerDef.type === 'timeline' ? 'timeline-container' : 'dynamic-container'}">
-        <div class="empty-timeline"><p>${containerDef.emptyMessage || 'Элементы не добавлены'}</p></div>
+        <div class="empty-timeline"><p>${containerDef.emptyMessage || i18n.global.t('dynamic.emptyItems')}</p></div>
       </div>
       <button class="btn btn-secondary" data-add-dynamic="${containerDef.id}" data-template="${containerDef.template}">
-        ➕ Добавить
+        ➕ ${i18n.global.t('dynamic.add')}
       </button>
     `;
     return container;

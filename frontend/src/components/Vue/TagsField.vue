@@ -38,7 +38,7 @@
             <i v-if="selectedTags.includes(tag.name)" class="fas fa-check tag-check"></i>
           </div>
           <div v-if="query && !exactMatch" class="tag-option create-option interactive-el" @mousedown.prevent="addCurrentTag">
-            <span class="tag-name">Создать "{{ query }}"</span>
+            <span class="tag-name">{{ t('tags.createTag', { query }) }}</span>
             <span class="tag-hint">Enter</span>
           </div>
         </div>
@@ -49,7 +49,10 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { invoke, stringifyId, processIds } from '../../js/services/api.service';
+
+const { t } = useI18n();
 
 const apiService = {
   getTags: async (project: string) => {

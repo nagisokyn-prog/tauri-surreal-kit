@@ -45,8 +45,18 @@
         .btn-back:hover { border-color: var(--accent, #8b5cf6); color: var(--accent, #8b5cf6); }
 
         #settingsContent {
-            margin-top: 60px; height: calc(100vh - 60px);
-            overflow: hidden; display: flex;
+            margin-top: 60px;
+            height: calc(100vh - 60px);
+            width: 100%;
+            min-width: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: stretch;
+        }
+        #settingsContent > * {
+            flex: 1 1 auto;
+            width: 100%;
+            min-width: 0;
         }
         .settings-container { width: 100%; height: 100%; }
 
@@ -60,20 +70,26 @@
     <div class="bg-glow bottom-right"></div>
 
     <div class="settings-topbar">
-        <h1>⚙️ <span id="settingsTitle">Settings</span></h1>
+        <h1>⚙️ <span id="settingsTitle" data-i18n="shell.settings.title">Settings</span></h1>
         <div class="topbar-actions">
-            <button class="btn-save" id="saveBtn">💾 Save</button>
-            <button class="btn-back" id="backBtn">← Back</button>
+            <button class="btn-save" id="saveBtn" data-i18n="shell.settings.save">💾 Save</button>
+            <button class="btn-back" id="backBtn" data-i18n="shell.settings.back">← Back</button>
         </div>
     </div>
 
     <div id="settingsContent"></div>
 
+    <script src="./shell-i18n.js"></script>
     <script>
         const cfg = window.__APP_CONFIG__ || {};
-        if (cfg.name) document.title = cfg.name + ' — Settings';
+        shellI18n.init(cfg.lang || cfg.locale);
+        const appName = cfg.name || shellI18n.t('shell.common.appName');
+        document.title = shellI18n.t('shell.settings.pageTitle', { appName });
+        document.getElementById('settingsTitle').textContent = shellI18n.t('shell.settings.title');
+        document.getElementById('saveBtn').textContent = shellI18n.t('shell.settings.save');
+        document.getElementById('backBtn').textContent = shellI18n.t('shell.settings.back');
         document.getElementById('backBtn').onclick = () => {
-            window.location.href = cfg.backUrl || 'project_launcher.html';
+            window.location.href = cfg.backUrl || './main.html';
         };
     </script>
 

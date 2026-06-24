@@ -141,6 +141,7 @@ export interface PerfSettings {
 // Полные настройки приложения
 export interface AppSettings {
   theme?: 'dark' | 'light' | string;  // Текущая выбранная тема
+  locale?: 'ru' | 'en';           // Язык интерфейса
   colors: ColorSettings;
   glass: GlassSettings;
   radii: RadiiSettings;

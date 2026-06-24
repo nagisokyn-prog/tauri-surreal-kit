@@ -18,6 +18,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         splash: resolve(__dirname, 'frontend/src/shell/splash.html'),
+        main: resolve(__dirname, 'frontend/src/shell/main.html'),
         settings: resolve(__dirname, 'frontend/src/shell/settings.html')
       }
     }

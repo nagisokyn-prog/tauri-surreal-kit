@@ -43,11 +43,19 @@
         <slot name="entity" :tab="activeTab" :group-id="group.id" />
       </div>
 
+      <!-- Schema editor -->
+      <div
+        v-else-if="activeTab?.tabType === 'schema-editor'"
+        style="display:flex; flex-direction:column; flex:1; min-height:0;"
+      >
+        <slot name="schema-editor" :tab="activeTab" :group-id="group.id" />
+      </div>
+
       <!-- Empty state -->
       <div v-else class="editor-group-empty">
         <div style="font-size:40px; opacity:0.15;">📋</div>
-        <div style="font-size:13px; margin-top:8px; opacity:0.4;">Перетащите вкладку или откройте элемент</div>
-        <div style="font-size:11px; margin-top:4px; opacity:0.25;">Ctrl+\ — разделить панель</div>
+        <div style="font-size:13px; margin-top:8px; opacity:0.4;">{{ t('common.dropTabOrOpenElement') }}</div>
+        <div style="font-size:11px; margin-top:4px; opacity:0.25;">{{ t('common.splitPaneHint') }}</div>
       </div>
     </div>
   </div>
@@ -55,6 +63,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import EditorTabBar from './EditorTabBar.vue';
 
 interface EditorTab {
@@ -62,7 +71,7 @@ interface EditorTab {
   rawId: string;
   title: string;
   entityType: string;
-  tabType: 'entity' | 'chapter';
+  tabType: 'entity' | 'chapter' | 'schema-editor';
   data: Record<string, unknown>;
   unsaved: boolean;
   scrollPos?: number;
@@ -92,6 +101,8 @@ const emit = defineEmits<{
   'move-tab': [payload: any];
   'reorder-tab': [payload: any];
 }>();
+
+const { t } = useI18n();
 
 const activeTab = computed(() =>
   props.group.tabs.find(t => t.id === props.group.activeTabId) ?? null

@@ -4,9 +4,11 @@
  * @rust-ready âœ… loadSettings, saveSettings, calculateLoadMeter, autoDetectFPS
  */
 
+import { setLocale } from '../i18n';
 import type { AppSettings } from '../types/settings';
 
 const DEFAULT_SETTINGS: AppSettings = {
+  locale: 'ru',
   colors: {
     bgBase: '#09090b', bgSecondary: '#121214', bgPanel: 'rgba(15,15,18,0.7)',
     bgInput: 'rgba(22,22,26,0.6)', textMain: '#ffffff', textMuted: 'rgba(255,255,255,0.65)',
@@ -70,6 +72,7 @@ class SettingsService {
           console.log('[settingsService] loaded from Tauri');
           this.settings = this.deepMerge(DEFAULT_SETTINGS, saved);
           this.applySettings();
+          this.applyLocale();
           return this.settings;
         }
       } catch (e) {
@@ -84,6 +87,7 @@ class SettingsService {
         console.log('[settingsService] loaded from localStorage');
         this.settings = this.deepMerge(DEFAULT_SETTINGS, JSON.parse(saved));
         this.applySettings();
+        this.applyLocale();
       } else {
         console.log('[settingsService] no saved settings found, using defaults');
       }
@@ -100,23 +104,23 @@ class SettingsService {
    * Ð¡Ð¾Ñ…Ñ€Ð°Ð½ÑÐµÑ‚ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð² Tauri Ð¸ localStorage
    * @rust-ready âœ…
    */
-  async saveSettings(settings: AppSettings | null = null): Promise<void> {
+  async saveSettings(settings: AppSettings | null = null, immediate = false): Promise<void> {
     if (settings) {
-      // ÐžÑ‡Ð¸Ñ‰Ð°ÐµÐ¼ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð¾Ñ‚ Vue Proxy Ð¿ÐµÑ€ÐµÐ´ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸ÐµÐ¼
+      // Очищаем объект от Vue Proxy перед сохранением
       this.settings = JSON.parse(JSON.stringify(settings));
     }
-    
-    // ÐŸÑ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ ÑÑ‚Ð¸Ð»Ð¸ Ð¼Ð³Ð½Ð¾Ð²ÐµÐ½Ð½Ð¾ Ð´Ð»Ñ Ð¾Ñ‚Ð·Ñ‹Ð²Ñ‡Ð¸Ð²Ð¾ÑÑ‚Ð¸ UI
+
+    // Применяем стили и язык мгновенно для отзывчивости UI
     this.applySettings();
+    this.applyLocale();
     this.notifyListeners();
 
-    // ÐžÑ‚Ð»Ð¾Ð¶ÐµÐ½Ð½Ð¾Ðµ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ðµ (Debounce) Ð´Ð»Ñ Ð¿Ñ€ÐµÐ´Ð¾Ñ‚Ð²Ñ€Ð°Ñ‰ÐµÐ½Ð¸Ñ ÑÐ¿Ð°Ð¼Ð° I/O
     if (this.saveTimeout) clearTimeout(this.saveTimeout);
-    
-    this.saveTimeout = setTimeout(async () => {
+
+    const persist = async () => {
       console.log('[settingsService] saving settings to backend:', JSON.stringify(this.settings).substring(0, 100));
 
-      // Ð¡Ð¾Ñ…Ñ€Ð°Ð½ÑÐµÐ¼ Ð² Tauri
+      // Сохраняем в Tauri
       if (window.__TAURI__?.core) {
         try {
           await window.__TAURI__.core.invoke('save_settings', { settings: this.settings });
@@ -125,13 +129,19 @@ class SettingsService {
         }
       }
 
-      // Fallback Ð½Ð° localStorage
+      // Fallback на localStorage
       try {
         localStorage.setItem((window as any).__APP_CONFIG__?.storageKey ?? 'app:settings', JSON.stringify(this.settings));
       } catch (e) {
         console.warn('localStorage save failed:', e);
       }
-    }, 300);
+    };
+
+    if (immediate) {
+      await persist();
+    } else {
+      this.saveTimeout = setTimeout(() => { void persist(); }, 300);
+    }
   }
 
   /**
@@ -154,6 +164,11 @@ class SettingsService {
    */
   getSettings(): AppSettings {
     return this.settings;
+  }
+
+  private applyLocale(): void {
+    const locale = (this.settings as AppSettings & { locale?: 'ru' | 'en' }).locale || DEFAULT_SETTINGS.locale;
+    setLocale(locale);
   }
 
   /**

@@ -38,7 +38,7 @@
             </div>
           </div>
           <div v-else style="padding: 20px; text-align: center; color: var(--text-muted); padding-top: 100px;">
-            Нет данных
+            {{ t('common.noData') }}
           </div>
         </div>
       </transition>
@@ -48,6 +48,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
   modelValue: {
@@ -60,13 +61,17 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: 'Выберите...'
+    default: ''
   },
   horizontal: {
     type: Boolean,
     default: false
   }
 });
+
+const { t } = useI18n();
+
+const placeholderText = computed(() => props.placeholder || t('common.selectPlaceholder'));
 
 const emit = defineEmits(['update:modelValue', 'hover-start', 'hover-end']);
 
@@ -105,10 +110,7 @@ const LEN = computed(() => normalizedOptions.value.length);
 const selectedLabel = computed(() => {
   const opt = normalizedOptions.value[currentIndex.value];
   if (opt) return opt.label;
-  return props.modelValue !== '' && props.modelValue !== null && props.modelValue !== undefined ? props.modelValue : props.placeholder;
-});
-
-const toggle = () => {
+    return props.modelValue !== '' && props.modelValue !== null && props.modelValue !== undefined ? props.modelValue : placeholderText.value;
   if (isOpen.value) close();
   else open();
 };

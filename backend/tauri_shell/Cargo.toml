@@ -5,9 +5,8 @@ description = "tauri-surreal-kit shell template — domain-agnostic Tauri + Surr
 authors = []
 edition = "2021"
 
-[lib]
-name = "tauri_shell"
-crate-type = ["rlib", "staticlib", "cdylib"]
+# [lib] intentionally removed — Tauri shell must compile as a binary only.
+# If you need to share logic, extract it to a separate crate in backend/
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

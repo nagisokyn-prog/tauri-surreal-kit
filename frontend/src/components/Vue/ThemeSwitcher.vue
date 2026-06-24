@@ -1,8 +1,8 @@
 <template>
   <div class="theme-switcher">
     <div class="theme-header">
-      <h3>🎨 Тема оформления</h3>
-      <p class="theme-description">Выберите удобную вам тему</p>
+      <h3>{{ t('settings.groupTitles.theme') }}</h3>
+      <p class="theme-description">{{ t('settings.themeDescription') }}</p>
     </div>
 
     <div class="theme-options">
@@ -15,7 +15,7 @@
           <div class="preview-bg"></div>
           <div class="preview-text">🌙</div>
         </div>
-        <span class="theme-label">Тёмная</span>
+        <span class="theme-label">{{ t('settings.themes.dark') }}</span>
         <span v-if="currentTheme === 'dark'" class="theme-active">✓</span>
       </button>
 
@@ -28,7 +28,7 @@
           <div class="preview-bg"></div>
           <div class="preview-text">☀️</div>
         </div>
-        <span class="theme-label">Светлая</span>
+        <span class="theme-label">{{ t('settings.themes.light') }}</span>
         <span v-if="currentTheme === 'light'" class="theme-active">✓</span>
       </button>
 
@@ -50,12 +50,12 @@
 
     <div class="theme-actions">
       <button class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 16px;" @click="saveCurrentAsTheme">
-        💾 Сохранить текущие настройки как новую тему
+        💾 {{ t('settings.saveTheme') }}
       </button>
     </div>
 
     <div v-if="isSaving" class="theme-saving">
-      ⏳ Сохранение...
+      {{ t('settings.saving') }}
     </div>
     <div v-if="saveMessage" :class="['theme-message', saveMessage.type]">
       {{ saveMessage.text }}
@@ -65,8 +65,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { settingsService } from '../../js/services/settings.service';
 
+const { t } = useI18n();
 const currentTheme = ref<string>('dark');
 const isSaving = ref(false);
 const saveMessage = ref<{ type: string; text: string } | null>(null);
@@ -107,11 +109,11 @@ const switchToDark = async () => {
     // Сохраняем с указанием текущей темы
     await settingsService.saveSettings({ ...newSettings, theme: 'dark' });
     currentTheme.value = 'dark';
-    saveMessage.value = { type: 'success', text: '✓ Тёмная тема активирована' };
+    saveMessage.value = { type: 'success', text: t('settings.themeActivated', { theme: t('settings.themes.dark') }) };
     setTimeout(() => { saveMessage.value = null; }, 2000);
   } catch (e) {
     console.error('Failed to switch theme:', e);
-    saveMessage.value = { type: 'error', text: '✗ Ошибка при переключении темы' };
+    saveMessage.value = { type: 'error', text: t('settings.themeActivationError') };
   } finally {
     isSaving.value = false;
   }
@@ -133,11 +135,11 @@ const switchToLight = async () => {
     // Сохраняем с указанием текущей темы
     await settingsService.saveSettings({ ...newSettings, theme: 'light' });
     currentTheme.value = 'light';
-    saveMessage.value = { type: 'success', text: '✓ Светлая тема активирована' };
+    saveMessage.value = { type: 'success', text: t('settings.themeActivated', { theme: t('settings.themes.light') }) };
     setTimeout(() => { saveMessage.value = null; }, 2000);
   } catch (e) {
     console.error('Failed to switch theme:', e);
-    saveMessage.value = { type: 'error', text: '✗ Ошибка при переключении темы' };
+    saveMessage.value = { type: 'error', text: t('settings.themeActivationError') };
   } finally {
     isSaving.value = false;
   }
@@ -157,18 +159,18 @@ const switchToCustom = async (themeName: string) => {
     
     await settingsService.saveSettings({ ...newSettings, theme: themeName });
     currentTheme.value = themeName;
-    saveMessage.value = { type: 'success', text: `✓ Тема "${themeName}" активирована` };
+    saveMessage.value = { type: 'success', text: t('settings.themeActivatedWithName', { theme: themeName }) };
     setTimeout(() => { saveMessage.value = null; }, 2000);
   } catch (e) {
     console.error('Failed to switch theme:', e);
-    saveMessage.value = { type: 'error', text: '✗ Ошибка при переключении темы' };
+    saveMessage.value = { type: 'error', text: t('settings.themeActivationError') };
   } finally {
     isSaving.value = false;
   }
 };
 
 const saveCurrentAsTheme = async () => {
-  const name = prompt('Введите название для новой темы:');
+  const name = prompt(t('settings.enterThemeNamePrompt'));
   if (!name || !name.trim()) return;
   
   const cleanName = name.trim();
@@ -186,11 +188,11 @@ const saveCurrentAsTheme = async () => {
     await settingsService.saveSettings(plainSettings);
     currentTheme.value = cleanName;
     
-    saveMessage.value = { type: 'success', text: `✓ Тема "${cleanName}" сохранена` };
+    saveMessage.value = { type: 'success', text: t('settings.themeSaved', { theme: cleanName }) };
     setTimeout(() => { saveMessage.value = null; }, 2000);
   } catch (e) {
     console.error('Failed to save custom theme:', e);
-    saveMessage.value = { type: 'error', text: '✗ Ошибка при сохранении темы' };
+    saveMessage.value = { type: 'error', text: t('settings.themeSaveError') };
   } finally {
     isSaving.value = false;
   }

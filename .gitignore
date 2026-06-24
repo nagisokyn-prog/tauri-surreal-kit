@@ -40,3 +40,9 @@ pnpm-debug.log*
 backend/target/
 backend/Cargo.lock
 backend/**/*.rs.bk
+
+# Tauri shell build artifacts
+backend/tauri_shell/target/
+backend/tauri_shell/data/surreal_db/
+backend/tauri_shell/Cargo.lock
+backend/tauri_shell/.taurignore

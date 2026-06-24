@@ -6,13 +6,14 @@
  */
 
 import { reactive, ref, computed } from 'vue';
+import { i18n } from '../i18n';
 
 export interface EditorTab {
   id: string;
   rawId: string;
   title: string;
   entityType: string;
-  tabType: 'entity' | 'chapter';
+  tabType: 'entity' | 'chapter' | 'schema-editor';
   data: Record<string, unknown>;
   unsaved: boolean;
   scrollPos?: number;
@@ -116,7 +117,7 @@ export function useEditorGroups() {
     if (idx < 0) return true;
 
     if (!force && g.tabs[idx].unsaved) {
-      if (!confirm('Есть несохраненные изменения. Закрыть?')) return false;
+      if (!confirm(i18n.global.t('editor.confirmCloseUnsaved'))) return false;
     }
 
     g.tabs.splice(idx, 1);
@@ -242,7 +243,7 @@ export function useEditorGroups() {
   // ─── Close all ───────────────────────────────────────────────────────────
   const closeAll = (force = false) => {
     const hasUnsaved = allTabs.value.some(t => t.unsaved);
-    if (!force && hasUnsaved && !confirm('Есть несохранённые изменения. Закрыть всё?')) return;
+    if (!force && hasUnsaved && !confirm(i18n.global.t('editor.confirmCloseAllUnsaved'))) return;
 
     state.groups.splice(0, state.groups.length,
       { id: mkGroupId(), tabs: [], activeTabId: null, flexBasis: 100 }

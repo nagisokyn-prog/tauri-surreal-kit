@@ -40,7 +40,7 @@
       @dragover.prevent="onBarDragOver"
       @drop.prevent="onBarDrop"
     >
-      Перетащите вкладку сюда
+      {{ t('common.dragTabHere') }}
     </div>
 
     <!-- Spacer -->
@@ -49,7 +49,7 @@
     <!-- Split button -->
     <button
       class="tab-bar-action"
-      title="Разделить (Ctrl+\)"
+      :title="t('common.splitPane')"
       @click="$emit('split')"
     >
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -62,7 +62,7 @@
     <button
       v-if="canClose"
       class="tab-bar-action tab-bar-close-group"
-      title="Закрыть панель"
+      :title="t('common.closePane')"
       @click="$emit('close-group')"
     >×</button>
   </div>
@@ -70,13 +70,14 @@
 
 <script setup lang="ts">
 import { ref, inject } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 interface EditorTab {
   id: string;
   rawId: string;
   title: string;
   entityType: string;
-  tabType: 'entity' | 'chapter';
+  tabType: 'entity' | 'chapter' | 'schema-editor';
   data: Record<string, unknown>;
   unsaved: boolean;
 }
@@ -97,6 +98,8 @@ const emit = defineEmits<{
   'move-tab': [payload: { tabId: string; fromGroupId: string; toGroupId: string; toIndex: number }];
   'reorder-tab': [payload: { groupId: string; fromIdx: number; toIdx: number }];
 }>();
+
+const { t } = useI18n();
 
 // ─── Drag state ────────────────────────────────────────────────────────────
 const DRAG_TAB_KEY = 'ww-drag-tab-id';
